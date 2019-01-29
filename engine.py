@@ -23,7 +23,7 @@ from pocketsphinx import get_model_path
 from pocketsphinx.pocketsphinx import Decoder
 
 from engines import Porcupine
-from engines import snowboydetect
+# from engines import snowboydetect
 
 
 class Engines(Enum):
@@ -32,7 +32,7 @@ class Engines(Enum):
     POCKET_SPHINX = 'Pocketsphinx'
     PORCUPINE = 'Porcupine'
     PORCUPINE_TINY = "PorcupineTiny"
-    SNOWBOY = 'Snowboy'
+    # SNOWBOY = 'Snowboy'
 
 
 class Engine(object):
@@ -72,8 +72,8 @@ class Engine(object):
             return np.linspace(0.0, 1.0, 10)
         if engine_type is Engines.POCKET_SPHINX:
             return np.logspace(-10, 20, 10)
-        if engine_type is Engines.SNOWBOY:
-            return np.linspace(0.4, 0.6, 10)
+        # if engine_type is Engines.SNOWBOY:
+        #     return np.linspace(0.4, 0.6, 10)
 
         raise ValueError('No sensitivity range for %s', engine_type.value)
 
@@ -94,8 +94,8 @@ class Engine(object):
             return PorcupineEngine(keyword, sensitivity)
         if engine_type is Engines.PORCUPINE_TINY:
             return PorcupineTinyEngine(keyword, sensitivity)
-        if engine_type is Engines.SNOWBOY:
-            return SnowboyEngine(keyword, sensitivity)
+        # if engine_type is Engines.SNOWBOY:
+        #     return SnowboyEngine(keyword, sensitivity)
 
         return ValueError('Cannot create engine of type %s', engine_type.value)
 
@@ -222,35 +222,35 @@ class PorcupineTinyEngine(PorcupineEngineBase):
     def __str__(self):
         return 'Porcupine Tiny'
 
-
-class SnowboyEngine(Engine):
-    """Snowboy engine."""
-
-    def __init__(self, keyword, sensitivity):
-        """
-        Constructor.
-
-        :param keyword: keyword to be detected.
-        :param sensitivity: detection sensitivity.
-        """
-
-        keyword = keyword.lower()
-        if keyword == 'alexa':
-            model_relative_path = 'engines/snowboy/resources/alexa/alexa-avs-sample-app/alexa.umdl'
-        else:
-            model_relative_path = 'engines/snowboy/resources/models/%s.umdl' % keyword
-
-        model_str = os.path.join(os.path.dirname(__file__), model_relative_path).encode()
-        resource_filename = os.path.join(os.path.dirname(__file__), 'engines/snowboy/resources/common.res').encode()
-        self._snowboy = snowboydetect.SnowboyDetect(resource_filename=resource_filename, model_str=model_str)
-        self._snowboy.SetSensitivity(str(sensitivity).encode())
-
-    def process(self, pcm):
-        pcm = (np.iinfo(np.int16).max * pcm).astype(np.int16).tobytes()
-        return self._snowboy.RunDetection(pcm) == 1
-
-    def release(self):
-        pass
-
-    def __str__(self):
-        return 'Snowboy'
+#
+# class SnowboyEngine(Engine):
+#     """Snowboy engine."""
+#
+#     def __init__(self, keyword, sensitivity):
+#         """
+#         Constructor.
+#
+#         :param keyword: keyword to be detected.
+#         :param sensitivity: detection sensitivity.
+#         """
+#
+#         keyword = keyword.lower()
+#         if keyword == 'alexa':
+#             model_relative_path = 'engines/snowboy/resources/alexa/alexa-avs-sample-app/alexa.umdl'
+#         else:
+#             model_relative_path = 'engines/snowboy/resources/models/%s.umdl' % keyword
+#
+#         model_str = os.path.join(os.path.dirname(__file__), model_relative_path).encode()
+#         resource_filename = os.path.join(os.path.dirname(__file__), 'engines/snowboy/resources/common.res').encode()
+#         self._snowboy = snowboydetect.SnowboyDetect(resource_filename=resource_filename, model_str=model_str)
+#         self._snowboy.SetSensitivity(str(sensitivity).encode())
+#
+#     def process(self, pcm):
+#         pcm = (np.iinfo(np.int16).max * pcm).astype(np.int16).tobytes()
+#         return self._snowboy.RunDetection(pcm) == 1
+#
+#     def release(self):
+#         pass
+#
+#     def __str__(self):
+#         return 'Snowboy'

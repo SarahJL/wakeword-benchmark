@@ -174,6 +174,9 @@ class CommonVoiceDataset(Dataset):
                     mp3_path = os.path.join(root, row['filename'])
                     assert mp3_path.endswith('.mp3')
 
+                    if not os.path.exists(mp3_path):
+                        continue
+
                     flac_path = mp3_path.replace('.mp3', '.flac')
                     if not os.path.exists(flac_path):
                         transformer = sox.Transformer()

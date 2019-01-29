@@ -26,4 +26,4 @@ else:
     sys.path.append(os.path.join(os.path.dirname(__file__), 'snowboy/swig/Python3'))
 
 from porcupine import Porcupine
-import snowboydetect
+# import snowboydetect
