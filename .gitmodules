@@ -1,6 +1,6 @@
 [submodule "engines/snowboy"]
 	path = engines/snowboy
 	url = https://github.com/SarahJL/snowboy.git
-[submodule "engines/Porcupine"]
+[submodule "engines/porcupine"]
 	path = engines/porcupine
 	url = https://github.com/SarahJL/Porcupine.git
