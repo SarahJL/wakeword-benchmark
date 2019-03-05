@@ -112,7 +112,7 @@ class Dataset(object):
 class CompositeDataset(Dataset):
     """Wrapper dataset for a collection of datasets."""
 
-    def __init__(self, datasets, shuffle=True, seed=666):
+    def __init__(self, datasets, shuffle=True, balance_datasets=True, seed=666):
         """
         Constructor.
 
@@ -120,6 +120,14 @@ class CompositeDataset(Dataset):
         :param shuffle: flag to indicate if the datasets examples are to be shuffled.
         :param seed: seed for random number generator used for shuffling.
         """
+
+        if balance_datasets:
+            sizes = [d.size() for d in datasets]
+            repeats = [max(sizes) // s for s in sizes]
+            datasets2 = []
+            for i, d in enumerate(datasets):
+                datasets2 += [d for x in range(repeats[i])]
+
 
         self._metadatas = []
         for dataset in datasets:
@@ -132,6 +140,7 @@ class CompositeDataset(Dataset):
 
     def _get_metadatas(self):
         return self._metadatas
+
 
 
 class CommonVoiceDataset(Dataset):
