@@ -72,7 +72,7 @@ def run_detection(engine_type):
     :param engine_type: type of the engine.
     :return: tuple of engine and list of accuracy information for different detection sensitivities.
     """
-
+    logging.info('Run detection for engine type: {}'.format(engine_type))
     res = []
     for sensitivity in Engine.sensitivity_range(engine_type):
         start_time = time.process_time()
