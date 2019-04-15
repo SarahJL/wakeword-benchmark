@@ -16,15 +16,12 @@
 import argparse
 import multiprocessing
 import time
-
 import logging
-logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
-
-logging.info('Script start')
 from dataset import *
 from engine import *
 from wakeword_executor import WakeWordExecutor
 
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 # Filter out logs from sox.
 logging.getLogger('sox').setLevel(logging.ERROR)
 
@@ -60,13 +57,15 @@ parser.add_argument(
     help='add noise to the datasets')
 
 
-def run_detection(engine_type):
+def run_detection(arguments):
     """
     Run wake-word detection for a given engine.
 
     :param engine_type: type of the engine.
     :return: tuple of engine and list of accuracy information for different detection sensitivities.
     """
+    engine_type, keyword, dataset, noise_dataset = arguments
+
     logging.info('Run detection for engine type: {}'.format(engine_type))
     res = []
     for sensitivity in Engine.sensitivity_range(engine_type):
@@ -88,6 +87,7 @@ def run_detection(engine_type):
 if __name__ == '__main__':
     keyword = 'alexa'
 
+    logging.info('Script start')
     args = parser.parse_args()
     logging.info('start create background speech dataset (includes conversion to wav so may take some time on first run...)')
     background_dataset = Dataset.create(Datasets.COMMON_VOICE, args.common_voice_directory, exclude_words=keyword)
@@ -106,11 +106,16 @@ if __name__ == '__main__':
         noise_dataset = None
 
     # Interleave the keyword dataset with background dataset to simulate the real-world conditions.
-    dataset = CompositeDataset(datasets=(background_dataset, keyword_dataset), shuffle=True)
+    dataset = CompositeDataset(
+        datasets=(background_dataset, keyword_dataset),
+        balance_datasets=True,
+        max_samples_per_dataset=10,
+        shuffle=True
+    )
 
     # Run the benchmark for each engine in it's own process.
     with multiprocessing.Pool() as pool:
-        results = pool.map(run_detection, [e for e in Engines])
+        results = pool.map(run_detection, [(e, keyword, dataset, noise_dataset) for e in Engines])
 
     # Save the results.
     if args.output_directory:
