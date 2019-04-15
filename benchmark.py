@@ -13,19 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 import argparse
-import logging
 import multiprocessing
 import time
 
+import logging
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
+
+logging.info('Script start')
+
+logging.info('Import datasets code. If first run since data download, SoX may take some time to convert all mp3 to wav...')
 from dataset import *
+logging.info('Import datasets code done.')
+
 from engine import *
 from wakeword_executor import WakeWordExecutor
 
 # Filter out logs from sox.
 logging.getLogger('sox').setLevel(logging.ERROR)
-logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
+
 
 parser = argparse.ArgumentParser(description='Benchmark for different wake-word engines')
 
@@ -118,3 +124,5 @@ if __name__ == '__main__':
                 writer = csv.DictWriter(f, ['sensitivity', 'false_alarm_per_hour', 'miss_rate'])
                 writer.writeheader()
                 writer.writerows(result)
+
+    logging.info('Script finish.')
