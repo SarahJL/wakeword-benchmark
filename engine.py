@@ -29,6 +29,7 @@ from engines import Porcupine
 class Engines(Enum):
     """Different wake-word engines."""
 
+    KERAS_CNN = 'KerasCNN'
     POCKET_SPHINX = 'Pocketsphinx'
     PORCUPINE = 'Porcupine'
     PORCUPINE_TINY = "PorcupineTiny"
@@ -65,7 +66,8 @@ class Engine(object):
     @staticmethod
     def sensitivity_range(engine_type):
         """Getter for sensitivity range of different engines to use in the benchmark."""
-
+        if engine_type is Engines.KERAS_CNN:
+            return np.array([0.5])
         if engine_type is Engines.PORCUPINE:
             return np.linspace(0.0, 1.0, 10)
         if engine_type is Engines.PORCUPINE_TINY:
@@ -87,7 +89,8 @@ class Engine(object):
         :param sensitivity: detection sensitivity.
         :return: engine instance.
         """
-
+        if engine_type is Engines.KERAS_CNN:
+            return KerasCNNEngine(keyword, sensitivity)
         if engine_type is Engines.POCKET_SPHINX:
             return PocketSphinxEngine(keyword, sensitivity)
         if engine_type is Engines.PORCUPINE:
@@ -99,6 +102,75 @@ class Engine(object):
 
         return ValueError('Cannot create engine of type %s', engine_type.value)
 
+class KerasCNNEngine(Engine):
+    """ Custom engine. """
+
+    def __init__(self, keyword, sensitivity):
+        """
+        Constructor.
+
+        :param keyword: keyword to be detected.
+        :param sensitivity: detection sensitivity.
+        """
+        input_shape = (super().frame_length, 1, 1)
+        num_classes=2
+        self.sensitivity = sensitivity
+
+        from keras.models import Sequential
+        from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
+        from keras.losses import categorical_crossentropy
+        from keras.optimizers import Adadelta
+
+        model = Sequential()
+        model.add(Conv2D(32, kernel_size=(3, 1),
+                         activation='relu',
+                         input_shape=input_shape))
+        model.add(Conv2D(64, (3, 1), activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2, 1)))
+        model.add(Dropout(0.25))
+        model.add(Flatten())
+        model.add(Dense(128, activation='relu'))
+        model.add(Dropout(0.5))
+        model.add(Dense(num_classes, activation='softmax'))
+
+        model.compile(loss=categorical_crossentropy,
+                      optimizer=Adadelta(),
+                      metrics=['accuracy'])
+        self.model = model
+
+    def process(self, pcm):
+        """
+        Method to check each frame for the keyword
+        :param pcm: input audio
+        :return: bool
+        """
+        # pcm = (np.iinfo(np.int16).max * pcm).astype(np.int16).tobytes()
+        pcm2 = np.expand_dims(pcm, axis=-1)
+        pcm2 = np.expand_dims(pcm2, axis=-1)
+        pcm2 = np.expand_dims(pcm2, axis=0)
+        y_pred = self.model.predict(pcm2)
+
+        detected = y_pred[0][0] > self.sensitivity
+
+        return detected
+
+    def release(self):
+        # clear keras session
+        from keras import backend as K
+        K.clear_session()
+
+        # force cuda to release memory
+        from numba import cuda
+        try:
+            cuda.select_device(0)
+            cuda.close()
+        except:
+            print("Couldn't release cuda: are you on cpu?")
+
+        return
+
+    def __str__(self):
+        return 'KerasCNN'
 
 class PocketSphinxEngine(Engine):
     """Pocketsphinx engine."""
