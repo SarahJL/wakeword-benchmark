@@ -112,7 +112,7 @@ class Dataset(object):
 class CompositeDataset(Dataset):
     """Wrapper dataset for a collection of datasets."""
 
-    def __init__(self, datasets, shuffle=True, balance_datasets=True, seed=666):
+    def __init__(self, datasets, shuffle=True, balance_datasets=True, max_samples_per_dataset=None, seed=666):
         """
         Constructor.
 
@@ -120,6 +120,8 @@ class CompositeDataset(Dataset):
         :param shuffle: flag to indicate if the datasets examples are to be shuffled.
         :param seed: seed for random number generator used for shuffling.
         """
+        if not max_samples_per_dataset:
+            max_samples_per_dataset = np.inf
 
         if balance_datasets:
             sizes = [d.size() for d in datasets]
@@ -128,10 +130,9 @@ class CompositeDataset(Dataset):
             for i, d in enumerate(datasets):
                 datasets2 += [d for x in range(repeats[i])]
 
-
         self._metadatas = []
         for dataset in datasets:
-            for i in range(dataset.size()):
+            for i in range(min(dataset.size(), max_samples_per_dataset)):
                 self._metadatas.append(dataset.get_metadata(i))
 
         if shuffle:
