@@ -287,7 +287,7 @@ class PorcupineTinyEngine(PorcupineEngineBase):
 
         keyword_file_path = os.path.join(
             os.path.dirname(__file__),
-            'engines/porcupine/resources/keyword_files/%s_linux_tiny.ppn' % keyword.lower())
+            'engines/porcupine/resources/keyword_files/linux/%s_linux_tiny.ppn' % keyword.lower())
 
         super().__init__(sensitivity, model_file_path, keyword_file_path)
 
