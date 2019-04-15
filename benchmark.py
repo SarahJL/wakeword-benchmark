@@ -21,17 +21,12 @@ import logging
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 
 logging.info('Script start')
-
-logging.info('Import datasets code. If first run since data download, SoX may take some time to convert all mp3 to wav...')
 from dataset import *
-logging.info('Import datasets code done.')
-
 from engine import *
 from wakeword_executor import WakeWordExecutor
 
 # Filter out logs from sox.
 logging.getLogger('sox').setLevel(logging.ERROR)
-
 
 parser = argparse.ArgumentParser(description='Benchmark for different wake-word engines')
 
@@ -94,14 +89,17 @@ if __name__ == '__main__':
     keyword = 'alexa'
 
     args = parser.parse_args()
-
+    logging.info('start create background speech dataset (includes conversion to wav so may take some time on first run...)')
     background_dataset = Dataset.create(Datasets.COMMON_VOICE, args.common_voice_directory, exclude_words=keyword)
     logging.info('loaded background speech dataset with %d examples' % background_dataset.size())
 
+    logging.info('start create keyword dataset (includes conversion to wav so may take some time on first run...)')
     keyword_dataset = Dataset.create(Datasets.ALEXA, args.alexa_directory)
     logging.info('loaded keyword dataset with %d examples' % keyword_dataset.size())
 
     if args.add_noise:
+        logging.info(
+            'start create noise dataset (includes conversion to wav so may take some time on first run...)')
         noise_dataset = Dataset.create(Datasets.DEMAND, args.demand_directory)
         logging.info('loaded noise dataset with %d examples' % noise_dataset.size())
     else:
