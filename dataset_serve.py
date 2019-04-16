@@ -2,7 +2,7 @@ import logging
 
 from dataset import *
 
-def get_mixed_dataset(common_voice_directory, alexa_directory, demand_directory, add_noise=True, kwargs={})
+def get_mixed_dataset(common_voice_directory, alexa_directory, demand_directory, add_noise=True, kwargs={}):
     keyword = 'alexa'
 
     background_dataset = Dataset.create(Datasets.COMMON_VOICE, common_voice_directory, exclude_words=keyword)
