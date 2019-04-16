@@ -2,7 +2,7 @@ import logging
 
 from dataset import *
 
-def get_mixed_dataset(common_voice_directory, alexa_directory, demand_directory, add_noise=True):
+def get_mixed_dataset(common_voice_directory, alexa_directory, demand_directory, add_noise=True, kwargs={}):
     keyword = 'alexa'
 
     background_dataset = Dataset.create(Datasets.COMMON_VOICE, common_voice_directory, exclude_words=keyword)
@@ -18,9 +18,9 @@ def get_mixed_dataset(common_voice_directory, alexa_directory, demand_directory,
         noise_dataset = None
 
     # Interleave the keyword dataset with background dataset to simulate the real-world conditions.
-    return CompositeDataset(datasets=(background_dataset, keyword_dataset), shuffle=True)
+    return CompositeDataset(datasets=(background_dataset, keyword_dataset), shuffle=True, **kwargs)
 
-def get_alexa_dataset(alexa_directory, demand_directory, add_noise=True):
+def get_alexa_dataset(alexa_directory, demand_directory, add_noise=True, kwargs={}):
     keyword = 'alexa'
 
     # background_dataset = Dataset.create(Datasets.COMMON_VOICE, common_voice_directory, exclude_words=keyword)
@@ -36,4 +36,4 @@ def get_alexa_dataset(alexa_directory, demand_directory, add_noise=True):
         noise_dataset = None
 
     # Interleave the keyword dataset with background dataset to simulate the real-world conditions.
-    return CompositeDataset(datasets=(keyword_dataset,keyword_dataset), shuffle=True)
+    return CompositeDataset(datasets=(keyword_dataset,keyword_dataset), shuffle=True, **kwargs)
