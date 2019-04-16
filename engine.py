@@ -112,7 +112,7 @@ class KerasCNNEngine(Engine):
         :param keyword: keyword to be detected.
         :param sensitivity: detection sensitivity.
         """
-        input_shape = (super().frame_length, 1, 1)
+        input_shape = (self.frame_length, 1, 1)
         num_classes=2
         self.sensitivity = sensitivity
 
@@ -137,6 +137,12 @@ class KerasCNNEngine(Engine):
                       optimizer=Adadelta(),
                       metrics=['accuracy'])
         self.model = model
+
+    @property
+    def frame_length(self):
+        """Number of audio samples per frame expected by the engine."""
+
+        return 1024
 
     def process(self, pcm):
         """
