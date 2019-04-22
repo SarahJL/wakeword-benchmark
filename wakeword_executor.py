@@ -24,7 +24,7 @@ from noise_mixer import *
 class WakeWordExecutor(object):
     """Executor for running (noisy) speech datasets through wake-word engines and collect their accuracy metrics."""
 
-    def __init__(self, engine_type, sensitivity, keyword, speech_dataset, noise_dataset=None):
+    def __init__(self, engine_type, sensitivity, keyword, speech_dataset, noise_dataset=None, kwargs={}):
         """
         Constructor.
 
@@ -45,7 +45,7 @@ class WakeWordExecutor(object):
         else:
             self._noise_mixer = None
 
-        self._engine = Engine.create(engine_type, keyword=keyword, sensitivity=sensitivity)
+        self._engine = Engine.create(engine_type, keyword=keyword, sensitivity=sensitivity, kwargs=kwargs)
 
     def execute(self):
         """

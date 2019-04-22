@@ -29,11 +29,11 @@ from engines import Porcupine
 class Engines(Enum):
     """Different wake-word engines."""
 
-    # KERAS_CNN = 'KerasCNN'
+    KERAS_CNN = 'KerasCNN'
     KERAS_CAPSULE = 'KerasCapsuleEngine'
-    # POCKET_SPHINX = 'Pocketsphinx'
-    # PORCUPINE = 'Porcupine'
-    # PORCUPINE_TINY = "PorcupineTiny"
+    POCKET_SPHINX = 'Pocketsphinx'
+    PORCUPINE = 'Porcupine'
+    PORCUPINE_TINY = "PorcupineTiny"
     # SNOWBOY = 'Snowboy'
 
 
@@ -67,24 +67,24 @@ class Engine(object):
     @staticmethod
     def sensitivity_range(engine_type):
         """Getter for sensitivity range of different engines to use in the benchmark."""
-        # if engine_type is Engines.KERAS_CNN:
-        #     # return np.linspace(0.0, 1.0, 10)
-        #     return np.array([0.1, 0.5, 0.9])
+        if engine_type is Engines.KERAS_CNN:
+            # return np.linspace(0.0, 1.0, 10)
+            return np.array([0.1, 0.5, 0.9])
         if engine_type is Engines.KERAS_CAPSULE:
             return np.array([0.1, 0.5, 0.9])
-        # if engine_type is Engines.PORCUPINE:
-        #     return np.linspace(0.0, 1.0, 10)
-        # if engine_type is Engines.PORCUPINE_TINY:
-        #     return np.linspace(0.0, 1.0, 10)
-        # if engine_type is Engines.POCKET_SPHINX:
-        #     return np.logspace(-10, 20, 10)
+        if engine_type is Engines.PORCUPINE:
+            return np.linspace(0.0, 1.0, 10)
+        if engine_type is Engines.PORCUPINE_TINY:
+            return np.linspace(0.0, 1.0, 10)
+        if engine_type is Engines.POCKET_SPHINX:
+            return np.logspace(-10, 20, 10)
         # if engine_type is Engines.SNOWBOY:
         #     return np.linspace(0.4, 0.6, 10)
 
         raise ValueError('No sensitivity range for %s', engine_type.value)
 
     @staticmethod
-    def create(engine_type, keyword, sensitivity):
+    def create(engine_type, keyword, sensitivity, kwargs):
         """
         Factory method.
 
@@ -93,16 +93,16 @@ class Engine(object):
         :param sensitivity: detection sensitivity.
         :return: engine instance.
         """
-        # if engine_type is Engines.KERAS_CNN:
-        #     return KerasCNNEngine(keyword, sensitivity)
+        if engine_type is Engines.KERAS_CNN:
+            return KerasCNNEngine(keyword, sensitivity, kwargs)
         if engine_type is Engines.KERAS_CAPSULE:
-            return KerasCapsuleEngine(keyword, sensitivity)
-        # if engine_type is Engines.POCKET_SPHINX:
-        #     return PocketSphinxEngine(keyword, sensitivity)
-        # if engine_type is Engines.PORCUPINE:
-        #     return PorcupineEngine(keyword, sensitivity)
-        # if engine_type is Engines.PORCUPINE_TINY:
-        #     return PorcupineTinyEngine(keyword, sensitivity)
+            return KerasCapsuleEngine(keyword, sensitivity, kwargs)
+        if engine_type is Engines.POCKET_SPHINX:
+            return PocketSphinxEngine(keyword, sensitivity)
+        if engine_type is Engines.PORCUPINE:
+            return PorcupineEngine(keyword, sensitivity)
+        if engine_type is Engines.PORCUPINE_TINY:
+            return PorcupineTinyEngine(keyword, sensitivity)
         # if engine_type is Engines.SNOWBOY:
         #     return SnowboyEngine(keyword, sensitivity)
 
@@ -111,7 +111,7 @@ class Engine(object):
 class KerasCNNEngine(Engine):
     """ Custom engine. """
 
-    def __init__(self, keyword, sensitivity):
+    def __init__(self, keyword, sensitivity, kwargs={}):
         """
         Constructor.
 
@@ -188,21 +188,19 @@ class KerasCNNEngine(Engine):
 class KerasCapsuleEngine(Engine):
     """ Custom engine. """
 
-    def __init__(self, keyword, sensitivity):
+    def __init__(self, keyword, sensitivity, kwargs={}):
         """
         Constructor.
 
         :param keyword: keyword to be detected.
         :param sensitivity: detection sensitivity.
         """
-        global capsnet_model_def
-        global capsnet_model_weights
 
         self.keyword = keyword
         self.sensitivity = sensitivity
         self.model = self.load_capsnet_model(
-            model_def=r"C:\Projects\rp-track\logs\capsnet-1555936934-model_def.json",
-            model_weights=None
+            model_def=kwargs['model_def'],
+            model_weights=kwargs['model_weights']
         )
 
     def load_capsnet_model(self, model_def='model_def.json', model_weights=None):

@@ -56,6 +56,18 @@ parser.add_argument(
     default=False,
     help='add noise to the datasets')
 
+parser.add_argument(
+    '--model_def',
+    type=str,
+    help='keras model definition json file',
+    default='model_def.json')
+
+parser.add_argument(
+    '--model_weights',
+    type=str,
+    help='model weights h5 file',
+    default='model_weights.h5')
+
 
 def run_detection(arguments):
     """
@@ -64,14 +76,18 @@ def run_detection(arguments):
     :param engine_type: type of the engine.
     :return: tuple of engine and list of accuracy information for different detection sensitivities.
     """
-    engine_type, keyword, dataset, noise_dataset = arguments
+    engine_type, keyword, dataset, noise_dataset, model_def, model_weights = arguments
+
+    kwargs = {'model_def': model_def, 'model_weights' : model_weights}
 
     logging.info('Run detection for engine type: {}'.format(engine_type))
     res = []
     for sensitivity in Engine.sensitivity_range(engine_type):
         start_time = time.process_time()
 
-        executor = WakeWordExecutor(engine_type, sensitivity, keyword, dataset, noise_dataset=noise_dataset)
+        executor = WakeWordExecutor(
+            engine_type, sensitivity, keyword, dataset, noise_dataset=noise_dataset, kwargs=kwargs
+        )
         false_alarm_per_hour, miss_rate = executor.execute()
         executor.release()
 
@@ -89,6 +105,7 @@ if __name__ == '__main__':
 
     logging.info('Script start')
     args = parser.parse_args()
+
     logging.info('start create background speech dataset (includes conversion to wav so may take some time on first run...)')
     background_dataset = Dataset.create(Datasets.COMMON_VOICE, args.common_voice_directory, exclude_words=keyword)
     logging.info('loaded background speech dataset with %d examples' % background_dataset.size())
@@ -115,7 +132,10 @@ if __name__ == '__main__':
 
     # Run the benchmark for each engine in it's own process.
     with multiprocessing.Pool() as pool:
-        results = pool.map(run_detection, [(e, keyword, dataset, noise_dataset) for e in Engines])
+        results = pool.map(
+            run_detection,
+            [(e, keyword, dataset, noise_dataset, args.model_def, args.model_weights) for e in Engines]
+        )
 
     # Save the results.
     if args.output_directory:
