@@ -29,10 +29,11 @@ from engines import Porcupine
 class Engines(Enum):
     """Different wake-word engines."""
 
-    KERAS_CNN = 'KerasCNN'
-    POCKET_SPHINX = 'Pocketsphinx'
-    PORCUPINE = 'Porcupine'
-    PORCUPINE_TINY = "PorcupineTiny"
+    # KERAS_CNN = 'KerasCNN'
+    KERAS_CAPSULE = 'KerasCapsuleEngine'
+    # POCKET_SPHINX = 'Pocketsphinx'
+    # PORCUPINE = 'Porcupine'
+    # PORCUPINE_TINY = "PorcupineTiny"
     # SNOWBOY = 'Snowboy'
 
 
@@ -66,15 +67,17 @@ class Engine(object):
     @staticmethod
     def sensitivity_range(engine_type):
         """Getter for sensitivity range of different engines to use in the benchmark."""
-        if engine_type is Engines.KERAS_CNN:
-            # return np.linspace(0.0, 1.0, 10)
+        # if engine_type is Engines.KERAS_CNN:
+        #     # return np.linspace(0.0, 1.0, 10)
+        #     return np.array([0.1, 0.5, 0.9])
+        if engine_type is Engines.KERAS_CAPSULE:
             return np.array([0.1, 0.5, 0.9])
-        if engine_type is Engines.PORCUPINE:
-            return np.linspace(0.0, 1.0, 10)
-        if engine_type is Engines.PORCUPINE_TINY:
-            return np.linspace(0.0, 1.0, 10)
-        if engine_type is Engines.POCKET_SPHINX:
-            return np.logspace(-10, 20, 10)
+        # if engine_type is Engines.PORCUPINE:
+        #     return np.linspace(0.0, 1.0, 10)
+        # if engine_type is Engines.PORCUPINE_TINY:
+        #     return np.linspace(0.0, 1.0, 10)
+        # if engine_type is Engines.POCKET_SPHINX:
+        #     return np.logspace(-10, 20, 10)
         # if engine_type is Engines.SNOWBOY:
         #     return np.linspace(0.4, 0.6, 10)
 
@@ -90,14 +93,16 @@ class Engine(object):
         :param sensitivity: detection sensitivity.
         :return: engine instance.
         """
-        if engine_type is Engines.KERAS_CNN:
-            return KerasCNNEngine(keyword, sensitivity)
-        if engine_type is Engines.POCKET_SPHINX:
-            return PocketSphinxEngine(keyword, sensitivity)
-        if engine_type is Engines.PORCUPINE:
-            return PorcupineEngine(keyword, sensitivity)
-        if engine_type is Engines.PORCUPINE_TINY:
-            return PorcupineTinyEngine(keyword, sensitivity)
+        # if engine_type is Engines.KERAS_CNN:
+        #     return KerasCNNEngine(keyword, sensitivity)
+        if engine_type is Engines.KERAS_CAPSULE:
+            return KerasCapsuleEngine(keyword, sensitivity)
+        # if engine_type is Engines.POCKET_SPHINX:
+        #     return PocketSphinxEngine(keyword, sensitivity)
+        # if engine_type is Engines.PORCUPINE:
+        #     return PorcupineEngine(keyword, sensitivity)
+        # if engine_type is Engines.PORCUPINE_TINY:
+        #     return PorcupineTinyEngine(keyword, sensitivity)
         # if engine_type is Engines.SNOWBOY:
         #     return SnowboyEngine(keyword, sensitivity)
 
@@ -179,6 +184,104 @@ class KerasCNNEngine(Engine):
 
     def __str__(self):
         return 'KerasCNN'
+
+class KerasCapsuleEngine(Engine):
+    """ Custom engine. """
+
+    def __init__(self, keyword, sensitivity):
+        """
+        Constructor.
+
+        :param keyword: keyword to be detected.
+        :param sensitivity: detection sensitivity.
+        """
+        global capsnet_model_def
+        global capsnet_model_weights
+
+        self.keyword = keyword
+        self.sensitivity = sensitivity
+        self.model = self.load_capsnet_model(
+            model_def=r"C:\Projects\rp-track\logs\capsnet-1555936934-model_def.json",
+            model_weights=None
+        )
+
+    def load_capsnet_model(self, model_def='model_def.json', model_weights=None):
+
+        from engines.capsule1d import CapsNet, Mask, CapsuleLayer, PrimaryCap, Length
+
+        custom_objects = {
+            'CapsNet': CapsNet,
+            'CapsuleLayer': CapsuleLayer,
+            'PrimaryCap': PrimaryCap,
+            'Mask': Mask,
+            'Length': Length
+        }
+
+        model = self.load_keras_model(model_def, custom_objects=custom_objects)
+
+        if model_weights:
+            print('Loading weights "{}"'.format(model_weights))
+            model.load_weights(model_weights, by_name=True)
+            print('Weights loaded.')
+
+        return model
+
+    def load_keras_model(self, json_path, custom_objects={}):
+        """
+        function loads keras model def (notincluding weights) from json file
+        :param model:
+        :param json_path:
+        :return:
+        """
+        from keras.models import model_from_json
+
+        with open(json_path, 'r') as fi:
+            json_string = fi.read()
+
+        model = model_from_json(json_string, custom_objects=custom_objects)
+        return model
+
+    @property
+    def frame_length(self):
+        """Number of audio samples per frame expected by the engine."""
+
+        # return max(self.model.input.shape.as_list()[1:])
+        return 2**13
+
+    def process(self, pcm):
+        """
+        Method to check each frame for the keyword
+        :param pcm: input audio
+        :return: bool
+        """
+        # pcm = (np.iinfo(np.int16).max * pcm).astype(np.int16).tobytes()
+        pcm = np.expand_dims(pcm, axis=-1)
+        pcm = np.expand_dims(pcm, axis=0)
+        y_dummy = np.array([[1,0]])
+        y_pred, x_recon = self.model.predict([pcm, y_dummy])
+
+        detected = y_pred[0][0] > self.sensitivity
+
+        return detected
+
+    def release(self):
+        # clear keras session
+        from keras import backend as K
+        K.clear_session()
+
+        # force cuda to release memory
+        from numba import cuda
+        try:
+            cuda.select_device(0)
+            cuda.close()
+        except:
+            print("Couldn't release cuda: are you on cpu?")
+
+        return
+
+    def __str__(self):
+        return 'KerasCapsule'
+
 
 class PocketSphinxEngine(Engine):
     """Pocketsphinx engine."""
