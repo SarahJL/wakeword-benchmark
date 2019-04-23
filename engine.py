@@ -256,7 +256,7 @@ class KerasCapsuleEngine(Engine):
         # pcm = (np.iinfo(np.int16).max * pcm).astype(np.int16).tobytes()
         pcm = np.expand_dims(pcm, axis=-1)
         pcm = np.expand_dims(pcm, axis=0)
-        y_dummy = np.array([[1,0]])
+        y_dummy = np.array([[1]])
         y_pred, x_recon = self.model.predict([pcm, y_dummy])
 
         detected = y_pred[0][1] > self.sensitivity
