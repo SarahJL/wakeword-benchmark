@@ -66,7 +66,7 @@ parser.add_argument(
     '--model_weights',
     type=str,
     help='model weights h5 file',
-    default='model_weights.h5')
+    default=None)
 
 
 def run_detection(arguments):
