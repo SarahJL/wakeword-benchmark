@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
         for engine, result in results:
             with open(os.path.join(args.output_directory, '%s.csv' % engine), 'w') as f:
-                writer = csv.DictWriter(f, list(result.keys()))
+                writer = csv.DictWriter(f, list(result[0].keys()))
                 writer.writeheader()
                 writer.writerows(result)
 
