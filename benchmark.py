@@ -68,6 +68,11 @@ parser.add_argument(
     help='model weights h5 file',
     default=None)
 
+parser.add_argument(
+    '--max_samples_per_dataset',
+    type=int,
+    help='limit on samples count per dataset. Set to None to udse full dataset.',
+    default=None)
 
 def run_detection(arguments):
     """
@@ -134,7 +139,7 @@ if __name__ == '__main__':
     dataset = CompositeDataset(
         datasets=(background_dataset, keyword_dataset),
         balance_datasets=True,
-        max_samples_per_dataset=1000,
+        max_samples_per_dataset=args.max_samples_per_dataset,
         shuffle=True
     )
 
