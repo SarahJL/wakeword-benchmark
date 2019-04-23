@@ -129,6 +129,7 @@ class CompositeDataset(Dataset):
             datasets2 = []
             for i, d in enumerate(datasets):
                 datasets2 += [d for x in range(repeats[i])]
+            datasets = datasets2
 
         self._metadatas = []
         for dataset in datasets:
