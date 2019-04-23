@@ -97,7 +97,6 @@ class WakeWordExecutor(object):
             num_false_alarms=num_false_alarms,
             num_detected=num_detected,
             num_misses=num_misses,
-            engine=self._engine,
             sensitrivity=self._sensitivity,
             num_keywords=self._num_keywords
         )
