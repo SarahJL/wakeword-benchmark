@@ -93,6 +93,7 @@ class Engine(object):
         :param sensitivity: detection sensitivity.
         :return: engine instance.
         """
+        print('Creating engine instance of type: {}'.format(engine_type))
         if engine_type is Engines.KERAS_CAPSULE:
             return KerasCapsuleEngine(keyword, sensitivity, kwargs)
         if engine_type is Engines.KERAS_CNN:
