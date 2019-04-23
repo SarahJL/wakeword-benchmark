@@ -96,12 +96,12 @@ class Engine(object):
         print('Creating engine instance of type: {}'.format(engine_type))
         if engine_type is Engines.KERAS_CAPSULE:
             return KerasCapsuleEngine(keyword, sensitivity, kwargs)
+        if engine_type is Engines.PORCUPINE:
+            return PorcupineEngine(keyword, sensitivity)
         if engine_type is Engines.KERAS_CNN:
             return KerasCNNEngine(keyword, sensitivity, kwargs)
         if engine_type is Engines.POCKET_SPHINX:
             return PocketSphinxEngine(keyword, sensitivity)
-        if engine_type is Engines.PORCUPINE:
-            return PorcupineEngine(keyword, sensitivity)
         if engine_type is Engines.PORCUPINE_TINY:
             return PorcupineTinyEngine(keyword, sensitivity)
         # if engine_type is Engines.SNOWBOY:
