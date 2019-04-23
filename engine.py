@@ -32,7 +32,7 @@ class Engines(Enum):
     # KERAS_CNN = 'KerasCNN'
     KERAS_CAPSULE = 'KerasCapsuleEngine'
     # POCKET_SPHINX = 'Pocketsphinx'
-    # PORCUPINE = 'Porcupine'
+    PORCUPINE = 'Porcupine'
     # PORCUPINE_TINY = "PorcupineTiny"
     # SNOWBOY = 'Snowboy'
 
@@ -72,8 +72,8 @@ class Engine(object):
         #     return np.array([0.1, 0.5, 0.9])
         if engine_type is Engines.KERAS_CAPSULE:
             return np.array([0.1, 0.5, 0.9])
-        # if engine_type is Engines.PORCUPINE:
-        #     return np.linspace(0.0, 1.0, 10)
+        if engine_type is Engines.PORCUPINE:
+            return np.linspace(0.0, 1.0, 10)
         # if engine_type is Engines.PORCUPINE_TINY:
         #     return np.linspace(0.0, 1.0, 10)
         # if engine_type is Engines.POCKET_SPHINX:
