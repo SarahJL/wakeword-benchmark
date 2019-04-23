@@ -60,7 +60,7 @@ parser.add_argument(
     '--model_def',
     type=str,
     help='keras model definition json file',
-    default='model_def.json')
+    default=None)
 
 parser.add_argument(
     '--model_weights',
@@ -93,14 +93,14 @@ def run_detection(arguments):
         executor = WakeWordExecutor(
             engine_type, sensitivity, keyword, dataset, noise_dataset=noise_dataset, kwargs=kwargs
         )
-        false_alarm_per_hour, miss_rate = executor.execute()
+        results = executor.execute()
         executor.release()
 
         end_time = time.process_time()
 
         logging.info('[%s][%s] took %s minutes to finish', engine_type.value, sensitivity, (end_time - start_time) / 60)
 
-        res.append(dict(sensitivity=sensitivity, false_alarm_per_hour=false_alarm_per_hour, miss_rate=miss_rate))
+        res.append(results)
 
     return engine_type.value, res
 

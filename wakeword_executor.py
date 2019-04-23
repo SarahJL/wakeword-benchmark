@@ -89,7 +89,19 @@ class WakeWordExecutor(object):
         logging.info('false alarms per hour: %f (%d / %f)', false_alarm_per_hour, num_false_alarms, total_duration_hour)
         logging.info('miss detection rate: %f (%d / %d)', miss_rate, num_misses, self._num_keywords)
 
-        return false_alarm_per_hour, miss_rate
+        return dict(
+            false_alarm_per_hour=false_alarm_per_hour,
+            miss_rate=miss_rate,
+            num_frames=num_frames,
+            total_duration_hour=total_duration_hour,
+            num_false_alarms=num_false_alarms,
+            num_detected=num_detected,
+            num_misses=num_misses,
+            engine=self._engine,
+            sensitrivity=self._sensitivity,
+            num_keywords=self._num_keywords
+        )
+
 
     def release(self):
         """Releases the resources acquired by the engine."""
