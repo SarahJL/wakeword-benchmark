@@ -134,7 +134,7 @@ if __name__ == '__main__':
     dataset = CompositeDataset(
         datasets=(background_dataset, keyword_dataset),
         balance_datasets=True,
-        max_samples_per_dataset=10,
+        max_samples_per_dataset=1000,
         shuffle=True
     )
 
