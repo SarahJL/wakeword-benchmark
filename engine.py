@@ -71,7 +71,7 @@ class Engine(object):
         #     # return np.linspace(0.0, 1.0, 10)
         #     return np.array([0.1, 0.5, 0.9])
         if engine_type is Engines.KERAS_CAPSULE:
-            return np.array([0.1, 0.5, 0.9])
+            return np.array([0.1, 0.5, 0.9, 0.99])
         if engine_type is Engines.PORCUPINE:
             return np.linspace(0.0, 1.0, 10)
         # if engine_type is Engines.PORCUPINE_TINY:
