@@ -29,11 +29,11 @@ from engines import Porcupine
 class Engines(Enum):
     """Different wake-word engines."""
 
-    KERAS_CNN = 'KerasCNN'
+    # KERAS_CNN = 'KerasCNN'
     KERAS_CAPSULE = 'KerasCapsuleEngine'
-    POCKET_SPHINX = 'Pocketsphinx'
-    PORCUPINE = 'Porcupine'
-    PORCUPINE_TINY = "PorcupineTiny"
+    # POCKET_SPHINX = 'Pocketsphinx'
+    # PORCUPINE = 'Porcupine'
+    # PORCUPINE_TINY = "PorcupineTiny"
     # SNOWBOY = 'Snowboy'
 
 
@@ -67,17 +67,17 @@ class Engine(object):
     @staticmethod
     def sensitivity_range(engine_type):
         """Getter for sensitivity range of different engines to use in the benchmark."""
-        if engine_type is Engines.KERAS_CNN:
-            # return np.linspace(0.0, 1.0, 10)
-            return np.array([0.1, 0.5, 0.9])
+        # if engine_type is Engines.KERAS_CNN:
+        #     # return np.linspace(0.0, 1.0, 10)
+        #     return np.array([0.1, 0.5, 0.9])
         if engine_type is Engines.KERAS_CAPSULE:
             return np.array([0.1, 0.5, 0.9])
-        if engine_type is Engines.PORCUPINE:
-            return np.linspace(0.0, 1.0, 10)
-        if engine_type is Engines.PORCUPINE_TINY:
-            return np.linspace(0.0, 1.0, 10)
-        if engine_type is Engines.POCKET_SPHINX:
-            return np.logspace(-10, 20, 10)
+        # if engine_type is Engines.PORCUPINE:
+        #     return np.linspace(0.0, 1.0, 10)
+        # if engine_type is Engines.PORCUPINE_TINY:
+        #     return np.linspace(0.0, 1.0, 10)
+        # if engine_type is Engines.POCKET_SPHINX:
+        #     return np.logspace(-10, 20, 10)
         # if engine_type is Engines.SNOWBOY:
         #     return np.linspace(0.4, 0.6, 10)
 
