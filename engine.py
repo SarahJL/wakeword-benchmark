@@ -267,13 +267,13 @@ class KerasCapsuleEngine(Engine):
         from keras import backend as K
         K.clear_session()
 
-        # force cuda to release memory
-        from numba import cuda
-        try:
-            cuda.select_device(0)
-            cuda.close()
-        except:
-            print("Couldn't release cuda: are you on cpu?")
+        # # force cuda to release memory
+        # from numba import cuda
+        # try:
+        #     cuda.select_device(0)
+        #     cuda.close()
+        # except:
+        #     print("Couldn't release cuda: are you on cpu?")
 
         return
 
