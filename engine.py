@@ -93,10 +93,10 @@ class Engine(object):
         :param sensitivity: detection sensitivity.
         :return: engine instance.
         """
-        if engine_type is Engines.KERAS_CNN:
-            return KerasCNNEngine(keyword, sensitivity, kwargs)
         if engine_type is Engines.KERAS_CAPSULE:
             return KerasCapsuleEngine(keyword, sensitivity, kwargs)
+        if engine_type is Engines.KERAS_CNN:
+            return KerasCNNEngine(keyword, sensitivity, kwargs)
         if engine_type is Engines.POCKET_SPHINX:
             return PocketSphinxEngine(keyword, sensitivity)
         if engine_type is Engines.PORCUPINE:
