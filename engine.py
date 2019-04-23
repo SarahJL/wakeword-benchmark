@@ -259,7 +259,7 @@ class KerasCapsuleEngine(Engine):
         y_dummy = np.array([[1,0]])
         y_pred, x_recon = self.model.predict([pcm, y_dummy])
 
-        detected = y_pred[0][0] > self.sensitivity
+        detected = y_pred[0][1] > self.sensitivity
 
         return detected
 
