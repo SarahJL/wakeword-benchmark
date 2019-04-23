@@ -55,6 +55,7 @@ class WakeWordExecutor(object):
         """
 
         num_false_alarms = 0
+        num_caught=0
         num_misses = 0
         total_duration_sec = 0
 
@@ -76,6 +77,7 @@ class WakeWordExecutor(object):
                     num_detected += 1
 
             if data.metadata.contains_keyword:
+                num_caught += num_detected
                 if num_detected == 0:
                     num_misses += 1
             else:
@@ -90,14 +92,13 @@ class WakeWordExecutor(object):
         logging.info('miss detection rate: %f (%d / %d)', miss_rate, num_misses, self._num_keywords)
 
         return dict(
-            false_alarm_per_hour=false_alarm_per_hour,
-            miss_rate=miss_rate,
-            num_frames=num_frames,
+            sensitivity=self._sensitivity,
             total_duration_hour=total_duration_hour,
             num_false_alarms=num_false_alarms,
-            num_detected=num_detected,
+            num_caught=num_caught,
             num_misses=num_misses,
-            sensitrivity=self._sensitivity,
+            miss_rate=miss_rate,
+            false_alarm_per_hour=false_alarm_per_hour,
             num_keywords=self._num_keywords
         )
 
