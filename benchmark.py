@@ -106,6 +106,10 @@ if __name__ == '__main__':
     logging.info('Script start')
     args = parser.parse_args()
 
+    import ast
+
+    args.model_weights = ast.literal_eval(args.model_weights)
+
     logging.info('start create background speech dataset (includes conversion to wav so may take some time on first run...)')
     background_dataset = Dataset.create(Datasets.COMMON_VOICE, args.common_voice_directory, exclude_words=keyword)
     logging.info('loaded background speech dataset with %d examples' % background_dataset.size())
