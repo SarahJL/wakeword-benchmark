@@ -107,8 +107,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     import ast
-
-    args.model_weights = ast.literal_eval(args.model_weights)
+    try:
+        args.model_weights = ast.literal_eval(args.model_weights)
+    except:
+        # ast.literal_eval() doesn't like double quotes within longer single quote string;
+        # needed for passing paths with spaces to linux command line
+        args.model_weights = args.model_weights
 
     logging.info('start create background speech dataset (includes conversion to wav so may take some time on first run...)')
     background_dataset = Dataset.create(Datasets.COMMON_VOICE, args.common_voice_directory, exclude_words=keyword)
