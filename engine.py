@@ -32,7 +32,7 @@ class Engines(Enum):
     # KERAS_CNN = 'KerasCNN'
     KERAS_CAPSULE = 'KerasCapsuleEngine'
     # POCKET_SPHINX = 'Pocketsphinx'
-    PORCUPINE = 'Porcupine'
+    # PORCUPINE = 'Porcupine'
     # PORCUPINE_TINY = "PorcupineTiny"
     # SNOWBOY = 'Snowboy'
 
@@ -64,13 +64,23 @@ class Engine(object):
 
         return 512
 
+    @property
+    def requires_resample(self):
+        """ Whether engine requires resample """
+        return False
+
+    @property
+    def target_sample_rate(self):
+        """ If resample required, target rate """
+        return 16000
+
     @staticmethod
     def sensitivity_range(engine_type):
         """Getter for sensitivity range of different engines to use in the benchmark."""
         if engine_type is Engines.KERAS_CAPSULE:
             return np.array([0.1, 0.5, 0.9, 0.99])
-        if engine_type is Engines.PORCUPINE:
-            return np.linspace(0.0, 1.0, 10)
+        # if engine_type is Engines.PORCUPINE:
+        #     return np.linspace(0.0, 1.0, 10)
         # if engine_type is Engines.KERAS_CNN:
         #     # return np.linspace(0.0, 1.0, 10)
         #     return np.array([0.1, 0.5, 0.9])
@@ -245,6 +255,16 @@ class KerasCapsuleEngine(Engine):
         """Number of audio samples per frame expected by the engine."""
 
         # return max(self.model.input.shape.as_list()[1:])
+        return 2**13
+
+    @property
+    def requires_resample(self):
+        """ Whether engine requires resample """
+        return True
+
+    @property
+    def target_sample_rate(self):
+        """ If resample required, target rate """
         return 2**13
 
     def process(self, pcm):

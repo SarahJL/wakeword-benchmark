@@ -15,6 +15,7 @@
 #
 
 import logging
+from scipy.signal import resample, decimate
 
 from dataset import *
 from engine import *
@@ -63,10 +64,17 @@ class WakeWordExecutor(object):
             data = self._speech_dataset.get_data(index)
 
             pcm = data.pcm
-            total_duration_sec += pcm.size / Dataset.SAMPLE_RATE
+            duration_sec = pcm.size / Dataset.SAMPLE_RATE
+            total_duration_sec += duration_sec
 
             if self._noise_mixer:
                 pcm = self._noise_mixer.mix(pcm)
+
+            if self._engine.requires_resample:
+                # first decimate to filter before applying resample (avoids aliasing)
+                pcm = decimate(pcm, int(np.round(Dataset.SAMPLE_RATE/self._engine.target_sample_rate)))
+                # then make dimensions precise with resample
+                pcm = resample(pcm, int(duration_sec * self._engine.target_sample_rate))
 
             frame_length = self._engine.frame_length
             num_frames = len(pcm) // frame_length
