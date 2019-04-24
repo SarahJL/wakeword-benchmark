@@ -3,3 +3,5 @@ numpy
 pocketsphinx
 soundfile
 sox
+Keras
+tensorflow
