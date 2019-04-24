@@ -74,6 +74,12 @@ parser.add_argument(
     help='limit on samples count per dataset. Set to None to udse full dataset.',
     default=None)
 
+parser.add_argument(
+    '--balance_dataset',
+    action='store_true',
+    default=False,
+    help='balance datasets (duplicates smaller datasets up until the number of samples exceeds the largest dataset)')
+
 def run_detection(arguments):
     """
     Run wake-word detection for a given engine.
@@ -138,7 +144,7 @@ if __name__ == '__main__':
     # Interleave the keyword dataset with background dataset to simulate the real-world conditions.
     dataset = CompositeDataset(
         datasets=(background_dataset, keyword_dataset),
-        balance_datasets=True,
+        balance_datasets=args.balance_dataset,
         max_samples_per_dataset=args.max_samples_per_dataset,
         shuffle=True
     )
