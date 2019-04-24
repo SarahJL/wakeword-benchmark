@@ -141,6 +141,7 @@ if __name__ == '__main__':
     else:
         noise_dataset = None
 
+
     # Interleave the keyword dataset with background dataset to simulate the real-world conditions.
     dataset = CompositeDataset(
         datasets=(background_dataset, keyword_dataset),
