@@ -76,11 +76,16 @@ class WakeWordExecutor(object):
                 # then make dimensions precise with resample
                 pcm = resample(pcm, int(duration_sec * self._engine.target_sample_rate))
 
+            if self._engine.requires_rescale:
+                pcm = self._engine.rescale(pcm)
+
             frame_length = self._engine.frame_length
-            num_frames = len(pcm) // frame_length
+            frame_shift = self._engine.frame_shift
+            num_frames = (len(pcm) - frame_length) // frame_shift
             num_detected = 0
+
             for i in range(num_frames):
-                frame = pcm[i * frame_length:(i + 1) * frame_length]
+                frame = pcm[i * frame_shift : i * frame_shift + frame_length]
                 if self._engine.process(frame):
                     num_detected += 1
 
@@ -115,3 +120,4 @@ class WakeWordExecutor(object):
         """Releases the resources acquired by the engine."""
 
         self._engine.release()
+

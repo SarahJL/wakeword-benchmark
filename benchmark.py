@@ -143,7 +143,7 @@ if __name__ == '__main__':
 
     # Interleave the keyword dataset with background dataset to simulate the real-world conditions.
     dataset = CompositeDataset(
-        datasets=(background_dataset, keyword_dataset),
+        datasets=(keyword_dataset, background_dataset),
         balance_datasets=args.balance_dataset,
         max_samples_per_dataset=args.max_samples_per_dataset,
         shuffle=True

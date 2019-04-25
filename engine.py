@@ -65,6 +65,12 @@ class Engine(object):
         return 512
 
     @property
+    def frame_shift(self):
+        """Number of frames to shift between windows"""
+
+        return self.frame_length
+
+    @property
     def requires_resample(self):
         """ Whether engine requires resample """
         return False
@@ -73,6 +79,15 @@ class Engine(object):
     def target_sample_rate(self):
         """ If resample required, target rate """
         return 16000
+
+    @property
+    def requires_rescale(self):
+        """ Whether engine requires rescale of audio vector """
+        return False
+
+    def rescale(self, input):
+        """ Method to scale audio vector """
+        return input
 
     @staticmethod
     def sensitivity_range(engine_type):
@@ -258,6 +273,13 @@ class KerasCapsuleEngine(Engine):
         return 2**13
 
     @property
+    def frame_shift(self):
+        """Number of audio samples per frame expected by the engine."""
+
+        # return max(self.model.input.shape.as_list()[1:])
+        return 2**11
+
+    @property
     def requires_resample(self):
         """ Whether engine requires resample """
         return True
@@ -266,6 +288,15 @@ class KerasCapsuleEngine(Engine):
     def target_sample_rate(self):
         """ If resample required, target rate """
         return 2**13
+
+    @property
+    def requires_rescale(self):
+        """ Whether engine requires rescale of audio vector """
+        return True
+
+    def rescale(self, input):
+        """ Method to scale audio vector """
+        return input / np.max(np.abs(input)) * 32767
 
     def process(self, pcm):
         """
