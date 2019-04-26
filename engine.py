@@ -19,8 +19,6 @@ import platform
 from enum import Enum
 
 import numpy as np
-from pocketsphinx import get_model_path
-from pocketsphinx.pocketsphinx import Decoder
 
 from engines import Porcupine
 # from engines import snowboydetect
@@ -343,6 +341,9 @@ class PocketSphinxEngine(Engine):
         :param keyword: keyword to be detected.
         :param sensitivity: detection sensitivity.
         """
+
+        from pocketsphinx import get_model_path
+        from pocketsphinx.pocketsphinx import Decoder
 
         # Set the configuration.
         config = Decoder.default_config()
