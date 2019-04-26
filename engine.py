@@ -290,7 +290,7 @@ class KerasCapsuleEngine(Engine):
     @property
     def requires_rescale(self):
         """ Whether engine requires rescale of audio vector """
-        return True
+        return False
 
     def rescale(self, input):
         """ Method to scale audio vector """
