@@ -268,14 +268,14 @@ class KerasCapsuleEngine(Engine):
         """Number of audio samples per frame expected by the engine."""
 
         # return max(self.model.input.shape.as_list()[1:])
-        return 2**14
+        return 2**13
 
     @property
     def frame_shift(self):
         """Number of audio samples per frame expected by the engine."""
 
         # return max(self.model.input.shape.as_list()[1:])
-        return 2**11
+        return 2**12
 
     @property
     def requires_resample(self):
